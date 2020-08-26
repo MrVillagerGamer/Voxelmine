@@ -1,0 +1,44 @@
+#version 420 core
+in vec2 pass_TexCoord;
+in vec4 pass_TransformedPosition;
+layout (binding=0) uniform sampler2D uniform_Sampler;
+uniform int uniform_AtlasSize;
+out vec4 out_Color;
+float fmod(float a, float b) {
+	return (a/b-int(a/b))*b;
+}
+void main() {
+	if(pass_TransformedPosition.z < 0) {
+		discard;
+	}
+	vec2 texCoords = pass_TexCoord;
+	
+	ivec2 texSize = ivec2(texCoords);// + ivec2(1);
+	texCoords.x = fmod(texCoords.x, 1.0);
+	texCoords.y = fmod(texCoords.y, 1.0);
+	ivec2 texIndex = ivec2(texCoords*16.0);
+	
+	// Put sub-image in range 0..1
+	texCoords.x *= uniform_AtlasSize;
+	texCoords.y *= uniform_AtlasSize;
+	texCoords.x -= texIndex.x;
+	texCoords.y -= texIndex.y;
+	
+	// Fit over higher dimensions
+	texCoords.x *= texSize.x;
+	texCoords.y *= texSize.y;
+	
+	// Put back in range 0..1
+	texCoords.x = fmod(texCoords.x, 1.0);
+	texCoords.y = fmod(texCoords.y, 1.0);
+	
+	// Put back in original range
+	texCoords.x += texIndex.x;
+	texCoords.y += texIndex.y;
+	texCoords.x /= uniform_AtlasSize;
+	texCoords.y /= uniform_AtlasSize;
+		
+	vec4 color = texture2D(uniform_Sampler, texCoords);
+	if(color.a < 0.5) discard;
+	out_Color = vec4(1.0, 1.0, 1.0, 1.0);
+}

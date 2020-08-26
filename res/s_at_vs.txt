@@ -1,0 +1,12 @@
+#version 420 core
+layout (location=0) in vec3 in_Position;
+uniform mat4 uniform_ProjMatrix;
+uniform mat4 uniform_ViewMatrix;
+out vec4 pass_TransformedPosition;
+out vec3 pass_Position;
+void main() {
+	vec3 pos = in_Position;
+	gl_Position = uniform_ProjMatrix * uniform_ViewMatrix * vec4(pos, 1.0);
+	pass_TransformedPosition = gl_Position;
+	pass_Position = pos;
+}

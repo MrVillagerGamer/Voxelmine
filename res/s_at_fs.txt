@@ -1,0 +1,31 @@
+#version 420 core
+in vec4 pass_TransformedPosition;
+in vec3 pass_Position;
+uniform vec3 uniform_ViewDir;
+uniform vec3 uniform_ViewPosition;
+uniform vec3 uniform_LightDirection;
+out vec4 out_Color;
+
+vec3 getSkyColor(vec3 dir) {
+	float b = 1 * pow(max(dot(normalize(-uniform_LightDirection), normalize(dir)), 0.0), 256);
+	vec3 lightDir2 = uniform_LightDirection;
+	lightDir2.y *= 100;
+	float sunsetFactor = 1;//pow(max(dot(normalize(-lightDir2), normalize(dir)), 0.0), 1);
+	lightDir2.y = 0;
+	vec3 pos2 = dir;
+	pos2.y *= 6;
+	sunsetFactor *= pow(max(dot(normalize(-lightDir2), normalize(pos2))/2.0+0.5, 0.0), 1);
+	sunsetFactor *= (1.0 - pow(abs(uniform_LightDirection.y), 1));
+	float f = 1-sunsetFactor;
+	vec3 color = vec3(0);
+	color.r = (0.75-f/1.5) + b;
+	color.b = f + b;
+	color.g = b + 0.5;
+	color *= -uniform_LightDirection.y/2.0+0.67;
+	color *= 1.2;
+	return color;
+}
+
+void main() {
+	out_Color = vec4(getSkyColor(pass_Position), 1.0);
+}

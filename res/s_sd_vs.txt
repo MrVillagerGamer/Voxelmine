@@ -1,0 +1,13 @@
+#version 420 core
+layout (location=0) in vec3 in_Position;
+layout (location=3) in vec2 in_TexCoord;
+uniform mat4 uniform_DepthProjMatrix;
+uniform mat4 uniform_DepthViewMatrix;
+uniform mat4 uniform_ModelMatrix;
+out vec4 pass_TransformedPosition;
+out vec2 pass_TexCoord;
+void main() {
+	pass_TexCoord = in_TexCoord;
+	gl_Position = uniform_DepthProjMatrix * uniform_DepthViewMatrix * uniform_ModelMatrix * vec4(in_Position, 1.0);
+	pass_TransformedPosition = gl_Position;
+}

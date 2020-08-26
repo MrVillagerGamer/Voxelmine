@@ -1,0 +1,18 @@
+#version 420 core
+in vec3 pass_Position;
+in vec3 pass_Color;
+in vec2 pass_TexCoord;
+layout (binding=0) uniform sampler2D uniform_Sampler;
+out vec4 out_Color;
+void main() {
+	vec2 texCoords = pass_TexCoord;
+	vec4 color = texture2D(uniform_Sampler, texCoords);
+	if(color.a < 0.5) discard;
+	
+	float cexp = 1.0;
+	color.r = pow(color.r, cexp);
+	color.g = pow(color.g, cexp);
+	color.b = pow(color.b, cexp);
+	vec3 final = color.rgb;
+	out_Color = vec4(final * pass_Color, 1.0);
+}
