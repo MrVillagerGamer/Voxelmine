@@ -1,1 +1,1 @@
-# Voxelmine-Website
+# Voxelmine
